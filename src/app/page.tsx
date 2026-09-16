@@ -1,0 +1,1 @@
+export default function Page(){return <main><p>WERTY / API</p><h1>Собственный API. Единый баланс.</h1><p>Backend Werty: авторизация, ключи, маршрутизация, учёт токенов и платежи.</p><pre>POST /v1/chat/completions</pre><p>Документация endpoints находится в README проекта. Эта страница не является готовым пользовательским кабинетом.</p></main>}
