@@ -1,0 +1,1 @@
+export default function Page(){return <main className="container" style={{padding:"80px 0"}}><h1>Условия использования</h1><p className="hero-copy">Перед коммерческим запуском владелец Werty должен дополнить эту страницу юридическими реквизитами, правилами возвратов и допустимого использования.</p></main>}

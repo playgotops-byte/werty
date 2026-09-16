@@ -1,0 +1,1 @@
+import {ApiKeysPanel} from "@/components/api-keys-panel";export const metadata={title:"API Keys"};export default function Page(){return <ApiKeysPanel/>}

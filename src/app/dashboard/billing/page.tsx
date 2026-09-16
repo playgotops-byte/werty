@@ -1,0 +1,1 @@
+import {BillingPanel} from "@/components/billing-panel";export const metadata={title:"Billing"};export default function Page(){return <BillingPanel/>}

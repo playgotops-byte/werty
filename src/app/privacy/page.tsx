@@ -1,0 +1,1 @@
+export default function Page(){return <main className="container" style={{padding:"80px 0"}}><h1>Политика конфиденциальности</h1><p className="hero-copy">Werty хранит данные аккаунта, usage и операции. Тексты запросов и полные API-ключи не сохраняются. Перед публичным запуском добавьте реквизиты оператора данных и сроки хранения.</p></main>}

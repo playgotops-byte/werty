@@ -1,0 +1,1 @@
+import {UsagePanel} from "@/components/usage-panel";export const metadata={title:"Usage"};export default function Page(){return <UsagePanel/>}

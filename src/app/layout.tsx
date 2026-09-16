@@ -1,3 +1,1 @@
-import type { Metadata } from "next";
-export const metadata: Metadata = {title:"Werty API",description:"Werty API gateway"};
-export default function Layout({children}:{children:React.ReactNode}) {return <html lang="ru"><body style={{background:"#090d14",color:"#dbe3ec",fontFamily:"system-ui",maxWidth:900,margin:"80px auto",padding:24}}>{children}</body></html>}
+import type {Metadata} from "next";import "./globals.css";import {MotionController} from "@/components/motion-controller";export const metadata:Metadata={title:{default:"Werty — единый API для моделей",template:"%s — Werty"},description:"Один API, единый баланс и прозрачная статистика использования моделей."};export default function Layout({children}:{children:React.ReactNode}){return <html lang="ru"><body><MotionController/>{children}</body></html>}

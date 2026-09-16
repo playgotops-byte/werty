@@ -1,0 +1,1 @@
+import {Suspense} from "react";import {AuthForm} from "@/components/auth-form";import {AuthLayout} from "@/components/auth-layout";export const metadata={title:"Подтверждение email"};export default function Page(){return <AuthLayout><Suspense><AuthForm mode="verify"/></Suspense></AuthLayout>}

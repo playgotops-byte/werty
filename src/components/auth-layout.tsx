@@ -1,0 +1,1 @@
+import {Brand} from "./brand";export function AuthLayout({children}:{children:React.ReactNode}){return <main className="auth-page"><aside className="auth-aside"><Brand/><blockquote>Один ключ для всей модельной линии. С прозрачным балансом и usage.</blockquote></aside><section className="auth-main">{children}</section></main>}
