@@ -48,7 +48,7 @@ Webhook URL: https://YOUR_DOMAIN/api/webhooks/yookassa. Событие: payment.
 
 ## Deployment
 
-Добавить все значения .env.example в Vercel. Preview и production должны использовать разные Supabase/ЮKassa credentials. Применить миграцию до deployment. Установить CRON_SECRET и вызывать /api/internal/reconcile авторизованным POST. Проверить лимит maxDuration выбранного Vercel-плана.
+Добавить все значения .env.example в Vercel. Preview и production должны использовать разные Supabase/ЮKassa credentials. Применить миграцию до deployment. Установить CRON_SECRET. На Vercel Hobby /api/internal/reconcile запускается один раз в сутки в 03:00 UTC; endpoint также можно вызвать вручную авторизованным GET или POST. Для частой автоматической сверки нужен Vercel Pro или внешний планировщик.
 
 ## Проверки
 
@@ -58,3 +58,4 @@ npm test
 npm run build
 
 До production отдельно проверить RLS на реальном Supabase, sandbox-платежи ЮKassa, SMTP/OTP, оба upstream API, streaming usage и лимиты Vercel. Реальные secrets не коммитить.
+
