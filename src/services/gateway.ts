@@ -1,4 +1,5 @@
 import "server-only";
+import {modelIdentity} from "./model-identity";
 import { randomUUID } from "node:crypto";
 import { ApiError,body,idemSchema,json } from "@/lib/http";
 import { checked,db,rateLimit,rpc } from "@/lib/db";
@@ -42,7 +43,7 @@ export async function completions(request:Request):Promise<Response>{
   if(request.signal.aborted)throw new ApiError(499,"client_disconnected");
   const updated=checked(await db().from("api_requests").update({status:"dispatched",updated_at:new Date().toISOString()}).eq("id",id).eq("status","reserved").select("id"));
   if(!updated||updated.length!==1)throw new ApiError(500,"invalid_request_state");dispatched=true;
-  const upstream=await fetch(provider.url,{method:"POST",redirect:"error",headers:{"Content-Type":"application/json",Authorization:"Bearer "+provider.apiKey},body:JSON.stringify({...input,model:provider.model,...(input.stream?{stream_options:{include_usage:true}}:{stream_options:undefined})}),signal:controller.signal,cache:"no-store"});
+  const upstream=await fetch(provider.url,{method:"POST",redirect:"error",headers:{"Content-Type":"application/json",Authorization:"Bearer "+provider.apiKey},body:JSON.stringify({...input,messages:[{role:"system",content:modelIdentity(model.display_name,provider.model)},...input.messages],model:provider.model,...(input.stream?{stream_options:{include_usage:true}}:{stream_options:undefined})}),signal:controller.signal,cache:"no-store"});
   if(!upstream.ok)throw new ApiError(upstream.status===429?503:502,"upstream_error");
   if(!input.stream){
    const raw=await upstream.json() as Record<string,unknown>;
