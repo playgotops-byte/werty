@@ -1,60 +1,60 @@
 "use client";
-import {useEffect,useRef} from "react";
+import {useEffect,useRef,useState} from "react";
 export function AuroraScene(){
  const ref=useRef<HTMLCanvasElement>(null);
+ const [active,setActive]=useState(true);
  useEffect(()=>{
   const canvas=ref.current;if(!canvas)return;
   const ctx=canvas.getContext("2d");if(!ctx)return;
-  const reduced=matchMedia("(prefers-reduced-motion: reduce)");
-  let width=0,height=0,frame=0,visible=true,time=0,last=0;
+  let w=0,h=0,frame=0,t=0,last=0,visible=true,enabled=true;
+  let saved:string|null=null;try{saved=localStorage.getItem("werty-motion");}catch{}
+  enabled=saved?saved==="on":!matchMedia("(prefers-reduced-motion: reduce)").matches;
+  document.documentElement.dataset.motion=enabled?"on":"off";
+  queueMicrotask(()=>setActive(enabled));
   const pointer={x:0,y:0},smooth={x:0,y:0};
-  const draw=(stamp:number)=>{
-   const delta=last?Math.min(stamp-last,40):16;last=stamp;
-   if(!reduced.matches)time+=delta*.00022;
-   smooth.x+=(pointer.x-smooth.x)*.04;smooth.y+=(pointer.y-smooth.y)*.04;
-   ctx.clearRect(0,0,width,height);
-   const radius=Math.min(width,height)*.33;
-   const cx=width*.5+smooth.x*18,cy=height*.48+smooth.y*18;
-   const glow=ctx.createRadialGradient(cx,cy,0,cx,cy,radius*1.6);
-   glow.addColorStop(0,"#a4a0ff25");glow.addColorStop(.5,"#5264ed16");glow.addColorStop(1,"#080b1400");
-   ctx.fillStyle=glow;ctx.fillRect(0,0,width,height);
-   for(let ring=0;ring<32;ring++){
-    const latitude=(ring/31-.5)*Math.PI;
-    ctx.beginPath();
-    for(let step=0;step<=110;step++){
-     const angle=step/110*Math.PI*2;
-     const wave=1+.09*Math.sin(angle*3+time*2+latitude*4);
-     const r=radius*Math.cos(latitude)*wave;
-     const x=r*Math.cos(angle+time);
-     const z=r*Math.sin(angle+time);
-     const y=radius*Math.sin(latitude);
-     const tilt=.42;
-     const ry=y*Math.cos(tilt)-z*Math.sin(tilt),rz=y*Math.sin(tilt)+z*Math.cos(tilt);
-     const perspective=650/(650-rz);
-     const px=cx+x*perspective,py=cy+ry*perspective;
-     if(step===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+  const render=(now:number)=>{
+   const dt=last?Math.min(now-last,40):16;last=now;if(enabled)t+=dt*.00065;
+   smooth.x+=(pointer.x-smooth.x)*.035;smooth.y+=(pointer.y-smooth.y)*.035;
+   ctx.clearRect(0,0,w,h);
+   const unit=Math.min(w*.43,h*.45),cx=w*.52,cy=h*.5;
+   const glow=ctx.createRadialGradient(cx,cy,unit*.15,cx,cy,unit*1.45);
+   glow.addColorStop(0,"#ff3d121a");glow.addColorStop(.5,"#fb52101c");glow.addColorStop(.8,"#583dff14");glow.addColorStop(1,"#05070b00");ctx.fillStyle=glow;ctx.fillRect(0,0,w,h);
+   const tilt=.65+Math.sin(t*.27)*.35+smooth.y*.35;
+   const rotate=t*.32+smooth.x*.35+Math.min(window.scrollY/h,2)*.18;
+   const points:{x:number;y:number;z:number;r:number;hue:number;light:number}[]=[];
+   const rings=w<500?60:92,steps=w<500?90:120;
+   for(let i=0;i<rings;i++){
+    const a=i/rings*Math.PI*2;
+    for(let j=0;j<steps;j++){
+     const b=j/steps*Math.PI*2;
+     const tube=.29+.07*Math.sin(a*3+t);
+     const radius=.66+tube*Math.cos(b);
+     let x=radius*Math.cos(a),y=radius*Math.sin(a),z=tube*Math.sin(b);
+     const ry=y*Math.cos(tilt)-z*Math.sin(tilt);
+     z=y*Math.sin(tilt)+z*Math.cos(tilt);y=ry;
+     const rx=x*Math.cos(rotate)+z*Math.sin(rotate);
+     z=-x*Math.sin(rotate)+z*Math.cos(rotate);x=rx;
+     const scale=2.5/(2.5-z);
+     points.push({x:cx+x*unit*scale,y:cy+y*unit*scale,z,r:(w<500?.75:1.05)*scale,hue:15+160*(.5+.5*Math.sin(a+t*.6))**5,light:38+(z+1)*20});
     }
-    ctx.strokeStyle="hsla("+(225+ring*2)+",90%,78%,"+(.17+Math.sin(ring/31*Math.PI)*.4)+")";
-    ctx.lineWidth=.8;ctx.stroke();
    }
-   for(let i=0;i<38;i++){
-    const a=i*2.399+time*.3,r=radius*(1.15+(i%7)*.08);
-    const x=cx+Math.cos(a)*r,y=cy+Math.sin(a)*r*.72;
-    ctx.fillStyle=i%3?"#b9bcfa88":"#d9faff";
-    ctx.beginPath();ctx.arc(x,y,i%3?1:2,0,Math.PI*2);ctx.fill();
-   }
-   if(visible&&!reduced.matches&&!document.hidden)frame=requestAnimationFrame(draw);
+   points.sort((a,b)=>a.z-b.z);
+   for(const p of points){ctx.fillStyle="hsl("+p.hue+" 95% "+p.light+"% / "+(.3+(p.z+1)*.32)+")";ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();}
+   ctx.save();ctx.translate(cx,cy);ctx.rotate(-.4+t*.06);ctx.scale(1,.34);
+   ctx.beginPath();ctx.ellipse(0,0,unit*1.34,unit*1.34,0,0,Math.PI*2);ctx.strokeStyle="#fa7a4033";ctx.lineWidth=1;ctx.stroke();
+   for(let i=0;i<5;i++){const a=t*(.6+i*.08)+i*1.26;ctx.beginPath();ctx.arc(Math.cos(a)*unit*1.34,Math.sin(a)*unit*1.34,3,0,Math.PI*2);ctx.fillStyle=i%2?"#6af5ed":"#ff783d";ctx.fill();}
+   ctx.restore();
+   if(visible&&enabled&&!document.hidden)frame=requestAnimationFrame(render);
   };
-  const restart=()=>{cancelAnimationFrame(frame);last=0;draw(performance.now());};
-  const resize=new ResizeObserver(()=>{
-   const box=canvas.getBoundingClientRect();width=box.width;height=box.height;
-   const dpr=Math.min(devicePixelRatio||1,2);
-   canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);restart();
-  });resize.observe(canvas);
-  const intersection=new IntersectionObserver(([entry])=>{visible=entry.isIntersecting;restart();});intersection.observe(canvas);
+  const restart=()=>{cancelAnimationFrame(frame);last=0;render(performance.now());};
+  const sync=()=>{enabled=document.documentElement.dataset.motion!=="off";setActive(enabled);restart();};
+  const resize=new ResizeObserver(()=>{const b=canvas.getBoundingClientRect();w=b.width;h=b.height;const dpr=Math.min(devicePixelRatio||1,1.75);canvas.width=w*dpr;canvas.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);restart();});
+  resize.observe(canvas);
+  const observer=new IntersectionObserver(([entry])=>{visible=entry.isIntersecting;if(visible)restart();else cancelAnimationFrame(frame);});observer.observe(canvas);
   const move=(e:PointerEvent)=>{const b=canvas.getBoundingClientRect();pointer.x=(e.clientX-b.left)/b.width-.5;pointer.y=(e.clientY-b.top)/b.height-.5;};
-  canvas.addEventListener("pointermove",move);reduced.addEventListener("change",restart);document.addEventListener("visibilitychange",restart);
-  return()=>{cancelAnimationFrame(frame);resize.disconnect();intersection.disconnect();canvas.removeEventListener("pointermove",move);reduced.removeEventListener("change",restart);document.removeEventListener("visibilitychange",restart);};
+  canvas.addEventListener("pointermove",move);window.addEventListener("werty-motion",sync);document.addEventListener("visibilitychange",restart);
+  return()=>{cancelAnimationFrame(frame);resize.disconnect();observer.disconnect();canvas.removeEventListener("pointermove",move);window.removeEventListener("werty-motion",sync);document.removeEventListener("visibilitychange",restart);};
  },[]);
- return <div className="aurora-scene"><canvas ref={ref} aria-hidden="true"/><div className="scene-caption"><span className="signal-dot"/>Единая точка подключения<span>01 / ∞</span></div><div className="scene-tag tag-a">ChatGPT<span>CONNECTED</span></div><div className="scene-tag tag-b">Claude<span>CONNECTED</span></div><div className="scene-coordinate">WERTY NETWORK / LIVE MOTION</div></div>;
+ function toggle(){const value=active?"off":"on";document.documentElement.dataset.motion=value;try{localStorage.setItem("werty-motion",value);}catch{}window.dispatchEvent(new Event("werty-motion"));}
+ return <div className="aurora-scene"><canvas ref={ref} aria-hidden="true"/><div className="motion-controls"><span>{active?"Движение включено":"Движение приостановлено"}</span><button type="button" onClick={toggle} aria-pressed={active}>{active?"Пауза":"Включить анимацию"}</button></div></div>;
 }
