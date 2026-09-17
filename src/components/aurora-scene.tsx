@@ -1,19 +1,15 @@
 "use client";
-import {useEffect,useRef,useState} from "react";
+import {useEffect,useRef} from "react";
 export function AuroraScene(){
  const ref=useRef<HTMLCanvasElement>(null);
- const [active,setActive]=useState(true);
  useEffect(()=>{
   const canvas=ref.current;if(!canvas)return;
   const ctx=canvas.getContext("2d");if(!ctx)return;
-  let w=0,h=0,frame=0,t=0,last=0,visible=true,enabled=true;
-  let saved:string|null=null;try{saved=localStorage.getItem("werty-motion");}catch{}
-  enabled=saved?saved==="on":!matchMedia("(prefers-reduced-motion: reduce)").matches;
-  document.documentElement.dataset.motion=enabled?"on":"off";
-  queueMicrotask(()=>setActive(enabled));
+  let w=0,h=0,frame=0,t=0,last=0,visible=true;
+  document.documentElement.dataset.motion="on";
   const pointer={x:0,y:0},smooth={x:0,y:0};
   const render=(now:number)=>{
-   const dt=last?Math.min(now-last,40):16;last=now;if(enabled)t+=dt*.00065;
+   const dt=last?Math.min(now-last,40):16;last=now;t+=dt*.00065;
    smooth.x+=(pointer.x-smooth.x)*.035;smooth.y+=(pointer.y-smooth.y)*.035;
    ctx.clearRect(0,0,w,h);
    const unit=Math.min(w*.43,h*.45),cx=w*.52,cy=h*.5;
@@ -44,17 +40,15 @@ export function AuroraScene(){
    ctx.beginPath();ctx.ellipse(0,0,unit*1.34,unit*1.34,0,0,Math.PI*2);ctx.strokeStyle="#fa7a4033";ctx.lineWidth=1;ctx.stroke();
    for(let i=0;i<5;i++){const a=t*(.6+i*.08)+i*1.26;ctx.beginPath();ctx.arc(Math.cos(a)*unit*1.34,Math.sin(a)*unit*1.34,3,0,Math.PI*2);ctx.fillStyle=i%2?"#6af5ed":"#ff783d";ctx.fill();}
    ctx.restore();
-   if(visible&&enabled&&!document.hidden)frame=requestAnimationFrame(render);
+   if(visible&&!document.hidden)frame=requestAnimationFrame(render);
   };
   const restart=()=>{cancelAnimationFrame(frame);last=0;render(performance.now());};
-  const sync=()=>{enabled=document.documentElement.dataset.motion!=="off";setActive(enabled);restart();};
   const resize=new ResizeObserver(()=>{const b=canvas.getBoundingClientRect();w=b.width;h=b.height;const dpr=Math.min(devicePixelRatio||1,1.75);canvas.width=w*dpr;canvas.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);restart();});
   resize.observe(canvas);
   const observer=new IntersectionObserver(([entry])=>{visible=entry.isIntersecting;if(visible)restart();else cancelAnimationFrame(frame);});observer.observe(canvas);
   const move=(e:PointerEvent)=>{const b=canvas.getBoundingClientRect();pointer.x=(e.clientX-b.left)/b.width-.5;pointer.y=(e.clientY-b.top)/b.height-.5;};
-  canvas.addEventListener("pointermove",move);window.addEventListener("werty-motion",sync);document.addEventListener("visibilitychange",restart);
-  return()=>{cancelAnimationFrame(frame);resize.disconnect();observer.disconnect();canvas.removeEventListener("pointermove",move);window.removeEventListener("werty-motion",sync);document.removeEventListener("visibilitychange",restart);};
+  canvas.addEventListener("pointermove",move);document.addEventListener("visibilitychange",restart);
+  return()=>{cancelAnimationFrame(frame);resize.disconnect();observer.disconnect();canvas.removeEventListener("pointermove",move);document.removeEventListener("visibilitychange",restart);};
  },[]);
- function toggle(){const value=active?"off":"on";document.documentElement.dataset.motion=value;try{localStorage.setItem("werty-motion",value);}catch{}window.dispatchEvent(new Event("werty-motion"));}
- return <div className="aurora-scene"><canvas ref={ref} aria-hidden="true"/><div className="motion-controls"><span>{active?"Движение включено":"Движение приостановлено"}</span><button type="button" onClick={toggle} aria-pressed={active}>{active?"Пауза":"Включить анимацию"}</button></div></div>;
+ return <div className="aurora-scene"><canvas ref={ref} aria-hidden="true"/></div>;
 }

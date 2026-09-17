@@ -8,6 +8,9 @@ export const POST=guarded(async(request)=>{
  const input=await body(request,schema,8192);
  const {error}=await authClient().auth.signUp({...input,options:{emailRedirectTo:appOrigin()+"/auth/verify"}});
  if(error?.code==="weak_password")throw new ApiError(400,"weak_password","Пароль отклонён настройками авторизации. Проверьте требования к паролю.");
- if(error)console.warn(JSON.stringify({code:"signup_not_completed"}));
+ if(error){
+  console.warn(JSON.stringify({code:"signup_not_completed",providerCode:error.code??"unknown"}));
+  throw new ApiError(503,"verification_email_not_sent","Не удалось отправить код. Проверьте настройки SMTP и повторите попытку позже.");
+ }
  return json({accepted:true});
 });

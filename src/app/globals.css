@@ -165,10 +165,6 @@ a:focus-visible,button:focus-visible{outline:2px solid #c6baff;outline-offset:5p
 .doc-badge{border-radius:3px;color:#c8eb58;background:#c8eb5810;border-color:#c8eb5833}
 .code-block{background:#10140d;border-color:#c8eb5833;border-radius:5px}.code-block pre{color:#d5dbc7}.code-block header{color:#a9b195}.code-block button{color:#cfec72}
 @keyframes spectrum-turn{to{transform:rotate(calc(var(--i)*7.5deg + 360deg))}}
-html[data-motion="off"] *,html[data-motion="off"] *:before,html[data-motion="off"] *:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
-html[data-motion="off"] .reveal{opacity:1!important;transform:none!important}
-html[data-motion="off"] .chart path{stroke-dashoffset:0}
-html[data-motion="off"] .spectrum,html[data-motion="off"] .usage-preview{transform:none}
 @media(max-width:1100px){.container{width:calc(100% - 48px)}.kinetic-hero{min-height:730px}.hero-heading h1{font-size:120px}.hero-bottom{display:block}.hero-bottom a{margin-top:25px}.kinetic-hero .aurora-scene{right:-10%;width:76%}.motion-controls{right:15%}.spectrum i{width:80%;height:50%}}
 @media(max-width:700px){.container{width:calc(100% - 36px)}.nav{height:80px}.nav-links .button{padding:11px 14px}.brand{font-size:29px}.kinetic-hero{height:auto;max-height:none;min-height:1010px;display:block;padding:46px 0 70px}.hero-heading h1{font-size:94px;margin:25px 0}.hero-heading .eyebrow{font-size:12px}.hero-bottom{display:flex;align-items:center;gap:20px}.hero-bottom p{font-size:15px}.hero-bottom a{margin:0;font-size:13px;padding:13px 17px}.kinetic-hero .aurora-scene{position:relative;right:auto;top:auto;width:120%;margin:0 -10%;height:480px}.motion-controls{bottom:22px;right:12%;font-size:11px}.hero-footnote{font-size:10px;gap:12px;bottom:20px}.section-heading{grid-template-columns:1fr;gap:20px;padding:60px 0 32px}.section-heading h2,.connect-section h2{font-size:39px}.section-heading>p{grid-column:1}.model-spread{min-height:580px;grid-template-columns:1fr;grid-template-rows:300px 280px}.spread-info{padding:28px}.spread-info h3{font-size:62px;margin:25px 0 10px}.spread-info p{font-size:14px}.spectrum i{width:60%;height:75%;border-width:2px}.claude-spread .spectrum i{height:68%;width:54%}.usage-stage{padding:10px 0}.usage-preview .metric{padding:22px 13px}.metric strong{font-size:27px}.metric label{font-size:11px}.chart{height:240px}.usage-section{padding-bottom:55px}.connect-section{grid-template-columns:1fr;gap:35px;padding:65px 0}.app-list a{font-size:22px;padding:21px 0}.footer{display:grid;gap:25px}.auth-aside .aurora-scene{height:400px}}
 
@@ -253,3 +249,19 @@ a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{o
 .site:after{animation-name:star-drift-far}
 body .hero-footnote,body .spread-number,body .code-block pre,body .code-block header,body .doc-badge,body .key-box,body .flow-index,body .packet,body code,body pre{font-family:Arial,"Segoe UI",sans-serif}
 .motion-controls{background:#0b0d0b;padding:5px 7px 5px 12px;border-radius:6px}
+
+/* Continuous landing background */
+.site.editorial:before,.site.editorial:after{display:none}
+.cosmic-backdrop{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;background:#080909}
+.cosmic-backdrop:before,.cosmic-backdrop:after{content:"";position:absolute;inset:-18%;background-image:radial-gradient(circle,#f5f2df 0 .7px,transparent 1px),radial-gradient(circle,#b9d8d3 0 .55px,transparent .9px);background-size:167px 193px,281px 263px;background-position:13px 31px,91px 73px;opacity:.46;will-change:background-position;animation:stars-near 46s linear infinite}
+.cosmic-backdrop:after{background-image:radial-gradient(circle,#e8eee5 0 .55px,transparent .85px),radial-gradient(circle,#ffb493 0 .45px,transparent .75px);background-size:337px 293px,419px 367px;background-position:57px 101px,173px 41px;opacity:.28;animation:stars-far 92s linear infinite}
+.milky-way{position:absolute;left:-26vw;top:32vh;width:155vw;height:30vw;min-height:260px;transform:rotate(-16deg);background:radial-gradient(ellipse at center,rgba(225,232,217,.14) 0,rgba(143,174,161,.09) 25%,rgba(68,85,77,.045) 49%,transparent 72%);filter:blur(17px);opacity:.88;will-change:transform;animation:milky-drift 34s ease-in-out infinite alternate}
+.milky-way:before,.milky-way:after{content:"";position:absolute;inset:13% 4%;background-image:radial-gradient(circle,rgba(244,244,225,.55) 0 .6px,transparent .95px),radial-gradient(circle,rgba(171,207,196,.38) 0 .45px,transparent .8px);background-size:71px 83px,109px 97px;mix-blend-mode:screen;opacity:.58;animation:dust-drift 58s linear infinite}
+.milky-way:after{inset:27% 8%;background-size:131px 113px,173px 149px;opacity:.38;animation-duration:83s;animation-direction:reverse}
+.editorial>header,.editorial>main,.editorial>footer{position:relative;z-index:1}
+.motion-controls{display:none!important}
+@keyframes stars-near{to{background-position:13px 417px,91px 599px}}
+@keyframes stars-far{to{background-position:57px 687px,173px 775px}}
+@keyframes milky-drift{to{transform:translate3d(4vw,-2vh,0) rotate(-14deg) scale(1.04)}}
+@keyframes dust-drift{to{background-position:284px 332px,-218px 194px}}
+@media(max-width:700px){.milky-way{top:41vh;left:-58vw;width:220vw;height:58vw;min-height:300px;opacity:.72}.cosmic-backdrop:before{opacity:.42;animation-duration:54s}.cosmic-backdrop:after{opacity:.22}}
