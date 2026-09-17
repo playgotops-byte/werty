@@ -18,7 +18,7 @@ export function AuroraScene(){
    ctx.clearRect(0,0,w,h);
    const unit=Math.min(w*.43,h*.45),cx=w*.52,cy=h*.5;
    const glow=ctx.createRadialGradient(cx,cy,unit*.15,cx,cy,unit*1.45);
-   glow.addColorStop(0,"#ff3d121a");glow.addColorStop(.5,"#fb52101c");glow.addColorStop(.8,"#583dff14");glow.addColorStop(1,"#05070b00");ctx.fillStyle=glow;ctx.fillRect(0,0,w,h);
+   glow.addColorStop(0,"#ff3d121a");glow.addColorStop(.5,"#fb52101c");glow.addColorStop(.8,"#08090900");glow.addColorStop(1,"#05070b00");ctx.fillStyle=glow;ctx.fillRect(0,0,w,h);
    const tilt=.65+Math.sin(t*.27)*.35+smooth.y*.35;
    const rotate=t*.32+smooth.x*.35+Math.min(window.scrollY/h,2)*.18;
    const points:{x:number;y:number;z:number;r:number;hue:number;light:number}[]=[];
